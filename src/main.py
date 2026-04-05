@@ -7,11 +7,10 @@ from recommender import recommend_top_n
 
 def main():
     df = load_interactions("data/user_artists.csv")
-
     df = clean_interactions(df)
     df = log_normalize_playcounts(df)
 
-    user_to_index, artist_to_index, index_to_user, index_to_artist = create_id_mappings(df)
+    user_to_index, artist_to_index, _, index_to_artist = create_id_mappings(df)
 
     interaction_matrix = build_interaction_matrix(df, user_to_index, artist_to_index)
 
@@ -20,20 +19,27 @@ def main():
 
     predicted_matrix = model.reconstruct_matrix()
 
-    example_user_id = df["userID"].iloc[0]
-    user_index = user_to_index[example_user_id]
+    users = df["userID"].unique()
+    copy_of_ids = []
 
-    recommendations = recommend_top_n(
-        original_matrix=interaction_matrix,
-        predicted_matrix=predicted_matrix,
-        user_index=user_index,
-        index_to_artist=index_to_artist,
-        n=10
-    )
+    #here we change numbers of users (2100 in all base)
+    for user in users[:10]:
+        user_index = user_to_index[user]
+        if user_index in copy_of_ids:
+            continue
+        else:
+            copy_of_ids.append(user_index)
+            recommendations = recommend_top_n(
+                original_matrix=interaction_matrix,
+                predicted_matrix=predicted_matrix,
+                user_index=user_index,
+                index_to_artist=index_to_artist,
+                n=10
+            )
 
-    print(f"Recommendations for user {example_user_id}:")
-    for rec in recommendations:
-        print(rec)
+            print(f"Recommendations for user {user}:")
+            for rec in recommendations:
+                print(rec)
 
 if __name__ == "__main__":
     main()
