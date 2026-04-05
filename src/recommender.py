@@ -21,9 +21,9 @@ def recommend_top_n(
 
     recommendations = [
         {
-            "artist_index": int(idx),
-            "artist_id": index_to_artist[idx],
-            "score": float(user_scores[idx]),
+            "Artist index": int(idx),
+            # "artist_id": index_to_artist[idx],
+            "Score": float(user_scores[idx]),
         }
         for idx in top_indices
     ]
