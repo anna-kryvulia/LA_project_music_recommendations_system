@@ -21,6 +21,8 @@ def main():
 
     users = df["userID"].unique()
     copy_of_ids = []
+
+    #here we change numbers of users (2100 in all base)
     for user in users[:10]:
         user_index = user_to_index[user]
         if user_index in copy_of_ids:
