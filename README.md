@@ -1,10 +1,9 @@
 #### Music recomendation system
 
-Team:
-
+Team:\
 Yustyna Hayevska\
 Anna Kryvulia\
-Sokha Lidiia\
+Sokha Lidiia
 
 Videos presentations for first workshop:\
-Yustyna Hayevska - https://github.com/anna-kryvulia/LA_project_music_recommendations_system.git \
+Yustyna Hayevska - https://github.com/anna-kryvulia/LA_project_music_recommendations_system.git 
