@@ -1,5 +1,5 @@
 from data_loader import load_interactions
-from preprocessing import clean_interactions, sample_dataframe
+from preprocessing import clean_interactions, sample_dataframe, log_normalize_playcounts
 from matrix_builder import create_id_mappings, build_interaction_matrix
 from svd_model import SVDRecommender
 from recommender import recommend_top_n
@@ -8,6 +8,7 @@ from recommender import recommend_top_n
 def main():
     df = load_interactions("data/user_artists.csv")
     df = clean_interactions(df)
+    df = log_normalize_playcounts(df)
     df = sample_dataframe(df, n_users=50, n_artists=50)
 
     user_to_index, artist_to_index, _, index_to_artist = create_id_mappings(df)
