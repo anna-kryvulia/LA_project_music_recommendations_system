@@ -1,6 +1,5 @@
 from scipy.sparse import csr_matrix
-#we are importing this library because the matrix is very sparse and normal numpy.array won't work good with it
-
+#Importing this library because the matrix is very sparse and normal numpy.array won't work good with it
 
 def create_id_mappings(df):
     """
