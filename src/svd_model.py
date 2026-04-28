@@ -23,6 +23,63 @@ class SVDRecommender:
         self.item_factors = None
         self.predicted_matrix = None
 
+    def power_iteration(self, M, max_iter=1000, tolerance=1e-10):
+        n = M.shape[0]
+
+        b = np.random.rand(n)
+        b = b / np.linalg.norm(b)
+
+        eigenvalue_old = 0
+
+        for _ in range(max_iter):
+            b_new = M @ b
+
+            norm = np.linalg.norm(b_new)
+            if norm == 0:
+                break
+
+            b_new = b_new / norm
+
+            eigenvalue = b_new.T @ M @ b_new
+
+            if abs(eigenvalue - eigenvalue_old) < tolerance:
+                break
+
+            b = b_new
+            eigenvalue_old = eigenvalue
+
+        eigenvector = b
+        eigenvalue = eigenvector.T @ M @ eigenvector
+
+        return eigenvalue, eigenvector
+
+    def manual_eigendecomposition(self, M, max_components=None):
+        M_copy = M.copy().astype(float)
+        n = M.shape[0]
+
+        if max_components is None:
+            max_components = n
+
+        eigenvalues = []
+        eigenvectors = []
+
+        for _ in range(max_components):
+            eigenvalue, eigenvector = self.power_iteration(M_copy)
+
+            if eigenvalue < 1e-10:
+                break
+
+            eigenvalues.append(eigenvalue)
+            eigenvectors.append(eigenvector)
+
+            M_copy = M_copy - eigenvalue * np.outer(eigenvector, eigenvector)
+
+        eigenvalues = np.array(eigenvalues)
+        eigenvectors = np.column_stack(eigenvectors)
+
+        return eigenvalues, eigenvectors
+
+
     def compute_svd(self, interaction_matrix):
         """
         Compute full SVD manually using eigendecomposition of A^T A.
@@ -37,12 +94,7 @@ class SVDRecommender:
         ata = A.T @ A
 
         #eigh is used because A^T A is symmetric
-        eigenvalues, eigenvectors = np.linalg.eigh(ata)
-
-        # sort in descending order
-        idx = np.argsort(eigenvalues)[::-1]
-        eigenvalues = eigenvalues[idx]
-        eigenvectors = eigenvectors[:, idx]
+        eigenvalues, eigenvectors = self.manual_eigendecomposition(ata, max_components=self.n_factors)
 
         #avoid tiny negative values
         eigenvalues = np.clip(eigenvalues, a_min=0.0, a_max=None)
@@ -140,3 +192,5 @@ class SVDRecommender:
         if self.predicted_matrix is None:
             raise ValueError("Model is not fitted yet.")
         return self.predicted_matrix
+    
+
